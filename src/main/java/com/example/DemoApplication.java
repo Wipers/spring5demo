@@ -96,4 +96,31 @@ public class DemoApplication {
     }
 
 
+    /**
+     *
+     * 其他示例，
+     * get方式 /person/{id} 以id查询用户
+     * get方式 /person  查询全部用户
+     * post 方式 /persion 修改用户
+     *
+        RouterFunction<?> route = route(GET("/person/{id}"),
+                request -> {
+                    Mono<Person> person = Mono.justOrEmpty(request.pathVariable("id"))
+                            .map(Integer::valueOf)
+                            .then(repository::getPerson);
+                    return Response.ok().body(fromPublisher(person, Person.class));
+                })
+                .and(route(GET("/person"),
+                        request -> {
+                            Flux<Person> people = repository.allPeople();
+                            return Response.ok().body(fromPublisher(people, Person.class));
+                        }))
+                .and(route(POST("/person"),
+                        request -> {
+                            Mono<Person> person = request.body(toMono(Person.class));
+                            return Response.ok().build(repository.savePerson(person));
+                        }));
+     */
+
+
 }
